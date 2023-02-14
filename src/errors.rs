@@ -7,7 +7,7 @@ error_chain!{
 
     foreign_links {
         Fmt(::std::fmt::Error);
-        Io(::std::io::Error) #[cfg(unix)];
+        Io(::std::io::Error);// #[cfg(windows)];
         Json(serde_json::Error);
         Yaml(serde_yaml::Error);
         HTTPRequest(reqwest::Error);

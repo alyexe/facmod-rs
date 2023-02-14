@@ -29,15 +29,15 @@ async fn run() -> Result<()> {
 
     // first, load the config file if specified
     let mut configdata = facmod::FacModConfig::new();
-    if let Some(config) = matches.value_of("config") {
+    if let Some(config) = matches.get_one::<String>("config") {
         configdata = facmod::FacModConfig::from_yaml(config)?;
     }
 
     // overwrite any config values with existing command arguments
-    match (matches.value_of("username"),
-        matches.value_of("api_token"),
-        matches.value_of("mods_folder"),
-        matches.value_of("mod_list")) {
+    match (matches.get_one::<String>("username"),
+        matches.get_one::<String>("api_token"),
+        matches.get_one::<String>("mods_folder"),
+        matches.get_one::<String>("mod_list")) {
         (Some(facuser), _, _, _) => configdata.username = Some(String::from(facuser)),
         (_, Some(token), _, _) => configdata.api_token = Some(String::from(token)),
         (_, _, Some(mod_dir), _) => configdata.mod_dir = Some(String::from(mod_dir)),
@@ -71,7 +71,7 @@ async fn run() -> Result<()> {
 
     let fmods = configdata.mod_list;
     
-    let mod_dir = match matches.value_of("mods_folder") {
+    let mod_dir = match matches.get_one::<String>("mods_folder") {
         Some(path) => String::from(path),
         _ => configdata.mod_dir.unwrap()
     };

@@ -45,19 +45,19 @@ pub async fn download_file<T: Serialize + ?Sized>(client: &reqwest::Client, url:
         .content_length()
         .chain_err(|| format!("Failed to get content length from '{}'", &url))?;
     
-    
-    // indicatif setup
-    let pb = ProgressBar::new(total_size);
-    pb.set_style(ProgressStyle::default_bar()
-        .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})")
-        .progress_chars("#>-"));
-    pb.set_message(format!("Downloading {}", url));
-
-    // download chunks
+        // download chunks
     info!("Downloading file {}", fname);
     let mut file = File::create(&ospath).chain_err(|| format!("Failed to create file '{}'", fname))?;
     let mut downloaded = 0u64;
     let mut stream = res.bytes_stream();
+
+    // indicatif setup
+    let pb = ProgressBar::new(total_size);
+    pb.set_style(ProgressStyle::with_template("{msg}\n  {spinner:.green} [{elapsed_precise}] [{bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})")
+        .unwrap()
+        .tick_chars("-|/-|\\*")
+        .progress_chars("#>-"));
+    pb.set_message(format!("Downloading {}", url));
 
     while let Some(item) = stream.next().await {
         let chunk = item.chain_err(|| format!("Failed to create file '{}'", fname))?;
